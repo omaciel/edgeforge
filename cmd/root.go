@@ -36,6 +36,7 @@ func init() {
 func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
+		log.Println("User passed configuration file: ", cfgFile)
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
@@ -47,7 +48,7 @@ func initConfig() {
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath("$CWD")
 		viper.AddConfigPath(".")
-
+		log.Println("Looking for configuration file.")
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -59,6 +60,8 @@ func initConfig() {
 			log.Println("error loading configuration file: ", err.Error())
 		}
 	}
+
+	log.Println("Using configuration file: ", viper.ConfigFileUsed())
 
 	viper.SetEnvPrefix("api")
 	viper.AutomaticEnv()

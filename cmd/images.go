@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var DEFAULT_OUTPUT_TYPE = []string{"rhel-edge-installer", "rhel-edge-commit"}
+
 var cmdImage = &cobra.Command{
 	Use:   "image",
 	Short: "Manage your images",
@@ -56,7 +58,6 @@ var cmdCreateImage = &cobra.Command{
 		}
 
 		log.Println("Response Status:", resp.Status())
-
 	},
 }
 
@@ -144,7 +145,7 @@ func init() {
 	cmdCreateImage.Flags().StringVarP(&name, "name", "n", "", "Image name")
 	cmdCreateImage.Flags().IntVarP(&version, "version", "v", 0, "Image version")
 	cmdCreateImage.Flags().StringVarP(&distribution, "distribution", "d", "", "Distribution")
-	cmdCreateImage.Flags().StringSliceVarP(&outputTypes, "output-types", "o", nil, "Output types")
+	cmdCreateImage.Flags().StringSliceVarP(&outputTypes, "output-types", "o", DEFAULT_OUTPUT_TYPE, "Output types")
 	cmdCreateImage.Flags().StringVarP(&arch, "arch", "a", "", "Architecture")
 	cmdCreateImage.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
 	cmdCreateImage.Flags().StringVarP(&username, "username", "u", "", "Installer username")
