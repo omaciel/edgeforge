@@ -1,0 +1,4 @@
+baseURL: "https://console.redhat.com/api/edge/v1"
+username: ""
+password: ""
+proxy: ""
