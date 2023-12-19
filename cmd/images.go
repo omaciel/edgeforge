@@ -8,6 +8,7 @@ import (
 
 	models "github.com/omaciel/edgeforge/pkg/models/images"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cmdImage = &cobra.Command{
@@ -15,7 +16,49 @@ var cmdImage = &cobra.Command{
 	Short: "Manage your images",
 }
 
-var cmdCreateImage = &cobra.Command{}
+var cmdCreateImage = &cobra.Command{
+	Use:   "create",
+	Short: "Create a new image",
+	Run: func(cmd *cobra.Command, args []string) {
+		name := viper.GetString("name")
+		version := viper.GetInt("version")
+		distribution := viper.GetString("distribution")
+		outputTypes := viper.GetStringSlice("output-types")
+		arch := viper.GetString("arch")
+		packages := viper.GetStringSlice("packages")
+		username := viper.GetString("username")
+		sshKey := viper.GetString("ssh-key")
+
+		imagePayload := &models.Image{
+			Name:         name,
+			Version:      version,
+			Distribution: distribution,
+			OutputTypes:  outputTypes,
+			Commit: &models.Commit{
+				Arch: arch,
+				InstalledPackages: func() []models.InstalledPackage {
+					var installedPackages []models.InstalledPackage
+					for _, pkg := range packages {
+						installedPackages = append(installedPackages, models.InstalledPackage{Name: pkg})
+					}
+					return installedPackages
+				}(),
+			},
+			Installer: &models.Installer{
+				Username: username,
+				SSHKey:   sshKey,
+			},
+		}
+
+		resp, err := client.CreateImage(imagePayload)
+		if err != nil {
+			log.Fatalf("POST request failed: %v", err)
+		}
+
+		log.Println("Response Status:", resp.Status())
+
+	},
+}
 
 var cmdImageDetails = &cobra.Command{
 	Use:   "details [imageID]",
@@ -80,7 +123,6 @@ var cmdImageSetViewCmd = &cobra.Command{
 		}
 
 		// Access the values in the structured format
-		fmt.Println("ImageBuildIsoURL:", response.ImageBuildIsoURL)
 		fmt.Println("ImageSet Name:", response.ImageSet.Name)
 		fmt.Println("LastImageDetails ID:", response.LastImageDetails.Image.ID)
 		fmt.Println("LastImageDetails Version:", response.LastImageDetails.Image.Version)
@@ -90,8 +132,26 @@ var cmdImageSetViewCmd = &cobra.Command{
 }
 
 func init() {
+	var name string
+	var version int
+	var distribution string
+	var outputTypes []string
+	var arch string
+	var packages []string
+	var username string
+	var sshKey string
+
+	cmdCreateImage.Flags().StringVarP(&name, "name", "n", "", "Image name")
+	cmdCreateImage.Flags().IntVarP(&version, "version", "v", 0, "Image version")
+	cmdCreateImage.Flags().StringVarP(&distribution, "distribution", "d", "", "Distribution")
+	cmdCreateImage.Flags().StringSliceVarP(&outputTypes, "output-types", "o", nil, "Output types")
+	cmdCreateImage.Flags().StringVarP(&arch, "arch", "a", "", "Architecture")
+	cmdCreateImage.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
+	cmdCreateImage.Flags().StringVarP(&username, "username", "u", "", "Installer username")
+	cmdCreateImage.Flags().StringVarP(&sshKey, "ssh-key", "k", "", "SSH key")
+	viper.BindPFlags(cmdCreateImage.Flags())
+
+	cmdImage.AddCommand(cmdCreateImage, cmdImageDetails, cmdImageSetViewCmd)
+
 	rootCmd.AddCommand(cmdImage)
-	cmdImage.AddCommand(cmdCreateImage)
-	cmdImage.AddCommand(cmdImageDetails)
-	cmdImage.AddCommand(cmdImageSetViewCmd)
 }
