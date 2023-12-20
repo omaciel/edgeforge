@@ -28,7 +28,7 @@ var cmdCreateImage = &cobra.Command{
 		outputTypes := viper.GetStringSlice("output-types")
 		arch := viper.GetString("arch")
 		packages := viper.GetStringSlice("packages")
-		username := viper.GetString("username")
+		username := viper.GetString("ssh-username")
 		sshKey := viper.GetString("ssh-key")
 
 		imagePayload := &models.Image{
@@ -148,7 +148,7 @@ func init() {
 	cmdCreateImage.Flags().StringSliceVarP(&outputTypes, "output-types", "o", DEFAULT_OUTPUT_TYPE, "Output types")
 	cmdCreateImage.Flags().StringVarP(&arch, "arch", "a", "", "Architecture")
 	cmdCreateImage.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
-	cmdCreateImage.Flags().StringVarP(&username, "username", "u", "", "Installer username")
+	cmdCreateImage.Flags().StringVarP(&username, "ssh-username", "u", "", "Installer username")
 	cmdCreateImage.Flags().StringVarP(&sshKey, "ssh-key", "k", "", "SSH key")
 	viper.BindPFlags(cmdCreateImage.Flags())
 
