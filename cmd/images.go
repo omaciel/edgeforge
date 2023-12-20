@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	models "github.com/omaciel/edgeforge/pkg/models/images"
+	"github.com/omaciel/edgeforge/pkg/models"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,6 +16,33 @@ var DEFAULT_OUTPUT_TYPE = []string{"rhel-edge-installer", "rhel-edge-commit"}
 var cmdImage = &cobra.Command{
 	Use:   "image",
 	Short: "Manage your images",
+}
+
+var cmdListImageSets = &cobra.Command{
+	Use:   "list",
+	Short: "Lists all image sets",
+	Run: func(cmd *cobra.Command, args []string) {
+		var imageSetView models.ImageSetView
+
+		resp, err := client.GetImageSetViews()
+		if err != nil {
+			log.Fatalf("request failed: %v", err)
+		}
+
+		log.Println("Response Status:", resp.Status())
+
+		if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
+			log.Fatalln("Error:", err)
+			return
+		}
+
+		if imageSetView.Count > 0 {
+			fmt.Printf("%-12s %-25s %-8s\n", "Image Set ID", "Name", "Version")
+			for _, imgSet := range imageSetView.Data {
+				fmt.Printf("%-12d %-25s %-8d\n", imgSet.ID, imgSet.Name, imgSet.Version)
+			}
+		}
+	},
 }
 
 var cmdCreateImage = &cobra.Command{
@@ -152,7 +179,7 @@ func init() {
 	cmdCreateImage.Flags().StringVarP(&sshKey, "ssh-key", "k", "", "SSH key")
 	viper.BindPFlags(cmdCreateImage.Flags())
 
-	cmdImage.AddCommand(cmdCreateImage, cmdImageDetails, cmdImageSetViewCmd)
+	cmdImage.AddCommand(cmdCreateImage, cmdImageDetails, cmdImageSetViewCmd, cmdListImageSets)
 
 	rootCmd.AddCommand(cmdImage)
 }

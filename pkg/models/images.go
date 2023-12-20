@@ -12,6 +12,11 @@ type ImageSet struct {
 	Images    interface{} `json:"Images"`
 }
 
+type ImageSetView struct {
+	Count int        `json:"count"`
+	Data  []ImageSet `json:"data"`
+}
+
 type LastImageDetails struct {
 	Image struct {
 		ID           int    `json:"ID"`
