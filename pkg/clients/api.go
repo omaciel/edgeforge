@@ -80,6 +80,7 @@ func NewAPIClient(settings *Settings) *APIClient {
 }
 
 func (apiClient *APIClient) Get(endpoint string) (*resty.Response, error) {
+	fmt.Println("GET: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().Get(apiClient.client.BaseURL + endpoint)
 }
 
@@ -87,11 +88,14 @@ func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.R
 	return apiClient.client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(payload).
-		Post(apiClient.client.HostURL + endpoint)
+		Post(apiClient.client.BaseURL + endpoint)
 }
 
 func (apiClient *APIClient) CreateImage(image *models.Image) (*resty.Response, error) {
-	return apiClient.Post("/images", image)
+	return apiClient.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(image).
+		Post(apiClient.client.BaseURL + "/images")
 }
 
 func (apiClient *APIClient) GetImageSetView(id int) (*resty.Response, error) {
