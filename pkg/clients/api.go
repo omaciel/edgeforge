@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/go-resty/resty/v2"
 	models "github.com/omaciel/edgeforge/pkg/models/images"
@@ -80,11 +81,12 @@ func NewAPIClient(settings *Settings) *APIClient {
 }
 
 func (apiClient *APIClient) Get(endpoint string) (*resty.Response, error) {
-	fmt.Println("GET: ", apiClient.client.BaseURL+endpoint)
+	log.Println("GET: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().Get(apiClient.client.BaseURL + endpoint)
 }
 
 func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.Response, error) {
+	log.Println("POST: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(payload).
@@ -92,6 +94,8 @@ func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.R
 }
 
 func (apiClient *APIClient) CreateImage(image *models.Image) (*resty.Response, error) {
+	log.Println("POST: ", apiClient.client.BaseURL+"/images")
+
 	return apiClient.client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(image).
