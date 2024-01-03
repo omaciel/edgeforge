@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/omaciel/edgeforge/pkg/models"
+	"github.com/omaciel/edgeforge/pkg/types"
 )
 
 const (
@@ -93,11 +93,9 @@ func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.R
 		Post(apiClient.client.BaseURL + endpoint)
 }
 
-func (apiClient *APIClient) CreateImage(image *models.Image) (*resty.Response, error) {
-	return apiClient.client.R().
-		SetHeader("Content-Type", "application/json").
-		SetBody(image).
-		Post(apiClient.client.BaseURL + "/images")
+func (apiClient *APIClient) CreateImage(image *types.Image) (*resty.Response, error) {
+	endpoint := "/images"
+	return apiClient.Post(endpoint, image)
 }
 
 // GetImageSetViews returns a list of image sets
@@ -130,6 +128,6 @@ func (apiClient *APIClient) GetImageStatus(imageVersion int) (*resty.Response, e
 	return apiClient.Get(fmt.Sprintf("/images/%v/status", imageVersion))
 }
 
-func (apiClient *APIClient) UpdateImage(imageVersion int, image *models.Image) (*resty.Response, error) {
+func (apiClient *APIClient) UpdateImage(imageVersion int, image *types.Image) (*resty.Response, error) {
 	return apiClient.Post(fmt.Sprintf("/images/%v/update", imageVersion), image)
 }

@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/omaciel/edgeforge/pkg/models"
+	"github.com/omaciel/edgeforge/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,7 +22,7 @@ var cmdListImageSets = &cobra.Command{
 	Use:   "list",
 	Short: "Lists all image sets",
 	Run: func(cmd *cobra.Command, args []string) {
-		var imageSetView models.ImageSetView
+		var imageSetView types.ImageSetView
 
 		resp, err := client.GetImageSetViews()
 		if err != nil {
@@ -59,22 +59,22 @@ var cmdCreateImage = &cobra.Command{
 		username := viper.GetString("ssh-username")
 		sshKey := viper.GetString("ssh-key")
 
-		imagePayload := &models.Image{
+		imagePayload := &types.Image{
 			Name:         name,
 			Version:      version,
 			Distribution: distribution,
 			OutputTypes:  outputTypes,
-			Commit: &models.Commit{
+			Commit: &types.Commit{
 				Arch: arch,
-				InstalledPackages: func() []models.InstalledPackage {
-					var installedPackages []models.InstalledPackage
+				InstalledPackages: func() []types.InstalledPackage {
+					var installedPackages []types.InstalledPackage
 					for _, pkg := range packages {
-						installedPackages = append(installedPackages, models.InstalledPackage{Name: pkg})
+						installedPackages = append(installedPackages, types.InstalledPackage{Name: pkg})
 					}
 					return installedPackages
 				}(),
 			},
-			Installer: &models.Installer{
+			Installer: &types.Installer{
 				Username: username,
 				SSHKey:   sshKey,
 			},
@@ -86,6 +86,20 @@ var cmdCreateImage = &cobra.Command{
 		}
 
 		log.Println("Response Status:", resp.Status())
+
+		var response types.Image
+		if err = json.Unmarshal(resp.Body(), &response); err != nil {
+			log.Fatalln("Error:", err)
+			return
+		}
+
+		// Access the values in the structured format
+		fmt.Println("Image Created")
+		fmt.Println("ID:", response.ID)
+		fmt.Println("Name:", response.Name)
+		fmt.Println("Distribution:", response.Distribution)
+		fmt.Println("Version:", response.Version)
+		fmt.Println("Description:", response.Description)
 	},
 }
 
@@ -107,7 +121,7 @@ var cmdImageDetails = &cobra.Command{
 		// Handle the response as needed
 		log.Println("Response Status:", resp.Status())
 
-		var response models.LastImageDetails
+		var response types.LastImageDetails
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {
 			log.Fatalln("Error:", err)
 			return
@@ -144,7 +158,7 @@ var cmdImageSetViewCmd = &cobra.Command{
 		log.Println("Response Status:", resp.Status())
 
 		// Process the response body or handle errors
-		var response models.ImageSetViewResponseStruct
+		var response types.ImageSetViewResponseStruct
 
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {
 			fmt.Println("Error:", err)
