@@ -121,7 +121,7 @@ var cmdImageDetails = &cobra.Command{
 		// Handle the response as needed
 		log.Println("Response Status:", resp.Status())
 
-		var response types.LastImageDetails
+		var response types.ImageDetail
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {
 			log.Fatalln("Error:", err)
 			return
@@ -130,7 +130,11 @@ var cmdImageDetails = &cobra.Command{
 		// Access the values in the structured format
 		fmt.Println("Image ID:", response.Image.ID)
 		fmt.Println("Image Name:", response.Image.Name)
-		fmt.Println("Image Status:", response.Image.Status)
+		fmt.Println("Image Type:")
+		for idx, artifact := range response.Image.OutputTypes {
+			fmt.Printf("\t%v - %v\n", idx, artifact)
+		}
+		// fmt.Println("Image Status:", response.Installer.Status)
 		fmt.Println("Image Distribution:", response.Image.Distribution)
 		fmt.Println("Image Version:", response.Image.Version)
 		fmt.Println("Image Description:", response.Image.Description)

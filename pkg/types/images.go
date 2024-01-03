@@ -1,5 +1,15 @@
 package types
 
+// ImageDetail return the structure to inform package info to images
+type ImageDetail struct {
+	Image              *Image `json:"image"`
+	AdditionalPackages int    `json:"additional_packages"`
+	Packages           int    `json:"packages"`
+	UpdateAdded        int    `json:"update_added"`
+	UpdateRemoved      int    `json:"update_removed"`
+	UpdateUpdated      int    `json:"update_updated"`
+}
+
 type ImageSet struct {
 	ID        int         `json:"ID"`
 	CreatedAt string      `json:"CreatedAt"`

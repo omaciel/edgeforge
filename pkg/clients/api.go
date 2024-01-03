@@ -86,6 +86,14 @@ func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.R
 		Post(apiClient.client.BaseURL + endpoint)
 }
 
+func (apiClient *APIClient) Put(endpoint string, payload interface{}) (*resty.Response, error) {
+	log.Println("PUT: ", apiClient.client.BaseURL+endpoint)
+	return apiClient.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(payload).
+		Put(apiClient.client.BaseURL + endpoint)
+}
+
 func (apiClient *APIClient) CreateImage(image *types.Image) (*resty.Response, error) {
 	endpoint := "/images"
 	return apiClient.Post(endpoint, image)
