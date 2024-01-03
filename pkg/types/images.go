@@ -52,7 +52,7 @@ type Image struct {
 	Version      int        `json:"Version"`
 	OutputTypes  []string   `json:"OutputTypes"`
 	Commit       *Commit    `json:"Commit"`
-	ID           uint       `json:"CommitID`
+	ID           uint       `json:"CommitID"`
 	Installer    *Installer `json:"Installer"`
 }
 
