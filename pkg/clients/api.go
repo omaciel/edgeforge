@@ -2,7 +2,6 @@ package clients
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"log"
 
@@ -16,12 +15,6 @@ const (
 	passwordEnv          = "API_PASSWORD"
 	proxyHTTP            = "API_HTTP_PROXY"
 	authenticationHeader = "Authorization"
-)
-
-var (
-	ErrNoUsernameProvided = errors.New("no username provided")
-	ErrNoPasswordProvided = errors.New("no password provided")
-	ErrNoBaseUrlProvided  = errors.New("no baseURL provided")
 )
 
 type APIClient struct {

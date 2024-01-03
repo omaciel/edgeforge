@@ -128,12 +128,12 @@ var cmdImageDetails = &cobra.Command{
 		}
 
 		// Access the values in the structured format
-		fmt.Println("ImageDetails ID:", response.Image.ID)
-		fmt.Println("ImageDetails Name:", response.Image.Name)
-		fmt.Println("ImageDetails Status:", response.Image.Status)
-		fmt.Println("ImageDetails Distribution:", response.Image.Distribution)
-		fmt.Println("ImageDetails Version:", response.Image.Version)
-		fmt.Println("ImageDetails Description:", response.Image.Description)
+		fmt.Println("Image ID:", response.Image.ID)
+		fmt.Println("Image Name:", response.Image.Name)
+		fmt.Println("Image Status:", response.Image.Status)
+		fmt.Println("Image Distribution:", response.Image.Distribution)
+		fmt.Println("Image Version:", response.Image.Version)
+		fmt.Println("Image Description:", response.Image.Description)
 
 	},
 }
