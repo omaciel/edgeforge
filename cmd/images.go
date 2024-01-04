@@ -130,15 +130,21 @@ var cmdImageDetails = &cobra.Command{
 		// Access the values in the structured format
 		fmt.Println("Image ID:", response.Image.ID)
 		fmt.Println("Image Name:", response.Image.Name)
+		fmt.Println("Image Status:", response.Image.Status)
 		fmt.Println("Image Type:")
 		for idx, artifact := range response.Image.OutputTypes {
 			fmt.Printf("\t%v - %v\n", idx, artifact)
 		}
-		// fmt.Println("Image Status:", response.Installer.Status)
 		fmt.Println("Image Distribution:", response.Image.Distribution)
 		fmt.Println("Image Version:", response.Image.Version)
 		fmt.Println("Image Description:", response.Image.Description)
-
+		// List any custom packages
+		if len(response.Image.Packages) > 0 {
+			fmt.Println("Custom Packages:")
+			for idx, installedPackage := range response.Image.Packages {
+				fmt.Printf("\t%v - %v\n", idx, installedPackage.Name)
+			}
+		}
 	},
 }
 
