@@ -10,7 +10,6 @@ var (
 	name         string
 	version      int
 	distribution string
-	outputTypes  []string
 	arch         string
 	packages     []string
 	username     string

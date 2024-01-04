@@ -17,17 +17,23 @@ var cmdCreateImage = &cobra.Command{
 		name := viper.GetString("name")
 		version := viper.GetInt("version")
 		distribution := viper.GetString("distribution")
-		outputTypes := viper.GetStringSlice("output-types")
+		outputTypes := viper.GetString("output-types")
 		arch := viper.GetString("arch")
 		packages := viper.GetStringSlice("packages")
 		username := viper.GetString("ssh-username")
 		sshKey := viper.GetString("ssh-key")
 
+		var imageArtifacts = []string{outputTypes}
+
+		// If building an installer, also explicitly build a commit.
+		if outputTypes == string(types.EdgeInstaller) {
+			imageArtifacts = append(imageArtifacts, string(types.EdgeCommit))
+		}
 		imagePayload := &types.Image{
 			Name:         name,
 			Version:      version,
 			Distribution: distribution,
-			OutputTypes:  outputTypes,
+			OutputTypes:  imageArtifacts,
 			Commit: &types.Commit{
 				Arch: arch,
 				InstalledPackages: func() []types.InstalledPackage {
@@ -68,10 +74,12 @@ var cmdCreateImage = &cobra.Command{
 }
 
 func init() {
+	var flagOutputType = types.EdgeInstaller
+
 	cmdCreateImage.Flags().StringVarP(&name, "name", "n", "", "Image name")
 	cmdCreateImage.Flags().IntVarP(&version, "version", "v", 1, "Image version")
 	cmdCreateImage.Flags().StringVarP(&distribution, "distribution", "d", "", "Distribution")
-	cmdCreateImage.Flags().StringSliceVarP(&outputTypes, "output-types", "o", DEFAULT_OUTPUT_TYPE, "Output types")
+	cmdCreateImage.Flags().Var(&flagOutputType, "output-types", `must be one of "rhel-edge-commit", or "rhel-edge-installer"`)
 	cmdCreateImage.Flags().StringVarP(&arch, "arch", "a", "", "Architecture")
 	cmdCreateImage.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
 	cmdCreateImage.Flags().StringVarP(&username, "ssh-username", "u", "", "Installer username")
