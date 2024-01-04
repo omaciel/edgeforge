@@ -50,32 +50,19 @@ type ImageSetViewResponseStruct struct {
 	LastImageDetails LastImageDetails `json:"LastImageDetails"`
 }
 
-type Commit struct {
-	Arch              string             `json:"Arch"`
-	InstalledPackages []InstalledPackage `json:"InstalledPackages,omitempty"`
-}
-
 type Image struct {
-	Name         string     `json:"Name"`
-	Distribution string     `json:"Distribution"`
-	Description  string     `json:"Description"`
-	Version      int        `json:"Version"`
-	OutputTypes  []string   `json:"OutputTypes"`
-	Commit       *Commit    `json:"Commit"`
-	ID           uint       `json:"CommitID"`
-	Installer    *Installer `json:"Installer"`
-}
-
-type InstalledPackage struct {
-	Name      string `json:"name"`
-	Arch      string `json:"arch"`
-	Release   string `json:"release"`
-	Sigmd5    string `json:"sigmd5"`
-	Signature string `json:"signature"`
-	Type      string `json:"type"`
-	Version   string `json:"version"`
-	Epoch     string `json:"epoch,omitempty"`
-	Commits   []Commit
+	Name           string     `json:"Name"`
+	Distribution   string     `json:"Distribution"`
+	Description    string     `json:"Description"`
+	Version        int        `json:"Version"`
+	Status         string     `json:"Status"`
+	OutputTypes    []string   `json:"OutputTypes"`
+	Commit         *Commit    `json:"Commit"`
+	ID             uint       `json:"CommitID"`
+	Installer      *Installer `json:"Installer"`
+	Packages       []Package  `json:"Packages,omitempty"`
+	CustomPackages []Package  `json:"CustomPackages,omitempty"`
+	RequestID      string     `json:"request_id"`
 }
 
 type Installer struct {
