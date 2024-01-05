@@ -3,7 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/omaciel/edgeforge/pkg/types"
 	"github.com/spf13/cobra"
@@ -20,13 +21,13 @@ var cmdImageSetView = &cobra.Command{
 		}
 
 		// Handle the response as needed
-		log.Println("Response Status:", resp.Status())
+		log.Debug("Response Status:", resp.Status())
 
 		// Process the response body or handle errors
 		var response types.ImageSetViewResponseStruct
 
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {
-			fmt.Println("Error:", err)
+			log.Error("Error:", err)
 			return
 		}
 

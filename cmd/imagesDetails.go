@@ -3,7 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/omaciel/edgeforge/pkg/types"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ var cmdImageDetails = &cobra.Command{
 			log.Fatalf("Error fetching image details: %s", err)
 		}
 		// Handle the response as needed
-		log.Println("Response Status:", resp.Status())
+		log.Debug("Response Status:", resp.Status())
 
 		var response types.Image
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {

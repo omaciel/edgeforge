@@ -3,7 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/omaciel/edgeforge/pkg/types"
 	"github.com/spf13/cobra"
@@ -23,7 +24,7 @@ var cmdImageSetVersions = &cobra.Command{
 			log.Fatalf("request failed: %v", err)
 		}
 
-		log.Println("Response Status:", resp.Status())
+		log.Debug("Response Status:", resp.Status())
 
 		if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
 			log.Fatalln("Error:", err)

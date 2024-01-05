@@ -3,7 +3,8 @@ package clients
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -73,12 +74,12 @@ func NewAPIClient(settings *Settings) *APIClient {
 }
 
 func (apiClient *APIClient) Get(endpoint string) (*resty.Response, error) {
-	log.Println("GET: ", apiClient.client.BaseURL+endpoint)
+	log.Debug("GET: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().Get(apiClient.client.BaseURL + endpoint)
 }
 
 func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.Response, error) {
-	log.Println("POST: ", apiClient.client.BaseURL+endpoint)
+	log.Debug("POST: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(payload).
@@ -86,7 +87,7 @@ func (apiClient *APIClient) Post(endpoint string, payload interface{}) (*resty.R
 }
 
 func (apiClient *APIClient) Put(endpoint string, payload interface{}) (*resty.Response, error) {
-	log.Println("PUT: ", apiClient.client.BaseURL+endpoint)
+	log.Debug("PUT: ", apiClient.client.BaseURL+endpoint)
 	return apiClient.client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(payload).
