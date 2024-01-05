@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cmdListImageSets = &cobra.Command{
+var cmdImageSetsList = &cobra.Command{
 	Use:   "list",
 	Short: "Lists all image sets",
 	Args:  cobra.NoArgs,
@@ -29,17 +29,17 @@ var cmdListImageSets = &cobra.Command{
 		}
 
 		if imageSetView.Count > 0 {
-			fmt.Printf("%-12s %-32s %-12s\n", "Image ID", "Image Name", "Versions")
-			fmt.Printf("%-12s %-32s %-12s\n", "--------", "----------", "--------")
+			fmt.Printf("%-12s %-32s %-12s %-12s\n", "Set ID", "Image Name", "Versions", "Distribution")
+			fmt.Printf("%-12s %-32s %-12s %-12s\n", "--------", "----------", "--------", "--------")
 			for _, imgSet := range imageSetView.Data {
-				fmt.Printf("%-12d %-32s %-12d\n", imgSet.ID, imgSet.Name, imgSet.Version)
+				fmt.Printf("%-12d %-32s %-12d %-12s\n", imgSet.ID, imgSet.Name, imgSet.Version, imgSet.Distribution)
 			}
-		} else {
-			fmt.Println("No image sets were found.")
 		}
 	},
 }
 
 func init() {
-	cmdImage.AddCommand(cmdListImageSets)
+	cmdImageSets.AddCommand(
+		cmdImageSetsList,
+	)
 }

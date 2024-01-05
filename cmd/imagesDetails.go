@@ -21,33 +21,30 @@ var cmdImageDetails = &cobra.Command{
 		// Handle the response as needed
 		log.Println("Response Status:", resp.Status())
 
-		var response types.ImageDetail
+		var response types.Image
 		if err = json.Unmarshal(resp.Body(), &response); err != nil {
 			log.Fatalln("Error:", err)
 			return
 		}
 
-		if response.Image != nil {
-			// Access the values in the structured format
-			fmt.Println("Image ID:", response.Image.ID)
-			fmt.Println("Image Name:", response.Image.Name)
-			fmt.Println("Image Status:", response.Image.Status)
-			fmt.Println("Image Type:")
-			for idx, artifact := range response.Image.OutputTypes {
-				fmt.Printf("\t%v - %v\n", idx, artifact)
+		// Access the values in the structured format
+		fmt.Println("Image Name:", response.Name)
+		fmt.Println("ID:", response.ID)
+		fmt.Println("Distribution:", response.Distribution)
+		fmt.Println("Image Version:", response.Version)
+		fmt.Println("Image Description:", response.Description)
+		fmt.Println("Status:", response.Status)
+		fmt.Println("Type:", response.ImageType)
+		fmt.Println("OutputTypes:")
+		for idx, artifact := range response.OutputTypes {
+			fmt.Printf("\t%v - %v\n", idx, artifact)
+		}
+		// List any custom packages
+		if len(response.Packages) > 0 {
+			fmt.Println("Custom Packages:")
+			for idx, installedPackage := range response.Packages {
+				fmt.Printf("\t%v - %v\n", idx, installedPackage.Name)
 			}
-			fmt.Println("Image Distribution:", response.Image.Distribution)
-			fmt.Println("Image Version:", response.Image.Version)
-			fmt.Println("Image Description:", response.Image.Description)
-			// List any custom packages
-			if len(response.Image.Packages) > 0 {
-				fmt.Println("Custom Packages:")
-				for idx, installedPackage := range response.Image.Packages {
-					fmt.Printf("\t%v - %v\n", idx, installedPackage.Name)
-				}
-			}
-		} else {
-			fmt.Printf("Image with id '%v' not found.\n", imageID)
 		}
 	},
 }

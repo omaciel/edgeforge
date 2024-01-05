@@ -20,5 +20,5 @@ var DEFAULT_OUTPUT_TYPE = []string{"rhel-edge-installer", "rhel-edge-commit"}
 
 var cmdImage = &cobra.Command{
 	Use:   "image",
-	Short: "Manage your images",
+	Short: "Manage your image sets images",
 }

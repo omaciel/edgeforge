@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/omaciel/edgeforge/pkg/types"
 )
 
 const (
@@ -92,43 +91,4 @@ func (apiClient *APIClient) Put(endpoint string, payload interface{}) (*resty.Re
 		SetHeader("Content-Type", "application/json").
 		SetBody(payload).
 		Put(apiClient.client.BaseURL + endpoint)
-}
-
-func (apiClient *APIClient) CreateImage(image *types.Image) (*resty.Response, error) {
-	endpoint := "/images"
-	return apiClient.Post(endpoint, image)
-}
-
-// GetImageSetViews returns a list of image sets
-func (apiClient *APIClient) GetImageSetViews() (*resty.Response, error) {
-	endpoint := "/image-sets/view"
-	return apiClient.Get(endpoint)
-}
-
-func (apiClient *APIClient) GetImageSetView(id int) (*resty.Response, error) {
-	endpoint := fmt.Sprintf("/image-sets/view/%v/", id)
-	return apiClient.Get(endpoint)
-}
-
-func (apiClient *APIClient) GetImageSetImageView(imagesetId, imageVersion int) (*resty.Response, error) {
-	endpoint := fmt.Sprintf("/image-sets/view/%v/versions/%v", imagesetId, imageVersion)
-	return apiClient.Get(endpoint)
-}
-
-func (apiClient *APIClient) GetImageDetails(imageVersion int) (*resty.Response, error) {
-	endpoint := fmt.Sprintf("/images/%v/details", imageVersion)
-	return apiClient.Get(endpoint)
-}
-
-func (apiClient *APIClient) GetImageRepo(imageVersion int) (*resty.Response, error) {
-	endpoint := fmt.Sprintf("/images/%v/repo", imageVersion)
-	return apiClient.Get(endpoint)
-}
-
-func (apiClient *APIClient) GetImageStatus(imageVersion int) (*resty.Response, error) {
-	return apiClient.Get(fmt.Sprintf("/images/%v/status", imageVersion))
-}
-
-func (apiClient *APIClient) UpdateImage(imageVersion int, image *types.Image) (*resty.Response, error) {
-	return apiClient.Post(fmt.Sprintf("/images/%v/update", imageVersion), image)
 }

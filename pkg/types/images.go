@@ -10,23 +10,6 @@ type ImageDetail struct {
 	UpdateUpdated      int    `json:"update_updated"`
 }
 
-type ImageSet struct {
-	ID        int         `json:"ID"`
-	CreatedAt string      `json:"CreatedAt"`
-	UpdatedAt string      `json:"UpdatedAt"`
-	DeletedAt string      `json:"DeletedAt"`
-	Name      string      `json:"Name"`
-	Version   int         `json:"Version"`
-	Account   string      `json:"Account"`
-	OrgID     string      `json:"org_id"`
-	Images    interface{} `json:"Images"`
-}
-
-type ImageSetView struct {
-	Count int        `json:"count"`
-	Data  []ImageSet `json:"data"`
-}
-
 type LastImageDetails struct {
 	Image struct {
 		ID           int    `json:"ID"`
@@ -51,14 +34,15 @@ type ImageSetViewResponseStruct struct {
 }
 
 type Image struct {
+	ID             uint       `json:"CommitID"`
 	Name           string     `json:"Name"`
 	Distribution   string     `json:"Distribution"`
 	Description    string     `json:"Description"`
 	Version        int        `json:"Version"`
 	Status         string     `json:"Status"`
+	ImageType      string     `json:"ImageType"`
 	OutputTypes    []string   `json:"OutputTypes"`
 	Commit         *Commit    `json:"Commit"`
-	ID             uint       `json:"CommitID"`
 	Installer      *Installer `json:"Installer"`
 	Packages       []Package  `json:"Packages,omitempty"`
 	CustomPackages []Package  `json:"CustomPackages,omitempty"`
@@ -74,4 +58,11 @@ type Installer struct {
 	Username         string `json:"Username"`
 	SSHKey           string `json:"SshKey"`
 	Checksum         string `json:"Checksum"`
+}
+
+// ImageDetailsResponseAPI is the row returned from v1/image-sets/view/<id>/versions/<id>
+type ImageDetailsResponseAPI struct {
+	ImageBuildIsoURL string          `json:"ImageBuildIsoURL"`
+	ImageSet         ImageSetVersion `json:"ImageSet"`
+	ImageDetails     []Image         `json:"image"`
 }

@@ -14,7 +14,7 @@ var cmdImageSetView = &cobra.Command{
 	Short: "View details of an image by ID",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		resp, err := client.GetImageSetView(imageID)
+		resp, err := client.GetImageSetsView(imageID)
 		if err != nil {
 			log.Fatalf("Error fetching image details: %s", err)
 		}
