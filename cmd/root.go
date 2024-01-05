@@ -30,6 +30,8 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	rootCmd.AddCommand(cmdImage)
+
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.forge.yaml)")
 }
 

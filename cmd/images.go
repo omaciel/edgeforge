@@ -22,7 +22,3 @@ var cmdImage = &cobra.Command{
 	Use:   "image",
 	Short: "Manage your images",
 }
-
-func init() {
-	rootCmd.AddCommand(cmdImage)
-}
