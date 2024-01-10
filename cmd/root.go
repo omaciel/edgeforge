@@ -10,6 +10,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/omaciel/edgeforge/cmd/images"
+	"github.com/omaciel/edgeforge/cmd/imagesets"
 	"github.com/omaciel/edgeforge/pkg/clients"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -39,8 +41,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(
-		cmdImage,
-		cmdImageSets,
+		images.NewImageCmd(&client).Cmd,
+		imagesets.NewImageSetsCmd(&client).Cmd,
 	)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.forge.yaml)")
