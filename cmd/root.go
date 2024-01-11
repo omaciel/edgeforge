@@ -19,11 +19,11 @@ import (
 
 var (
 	// Used for flags.
-	cfgFile string
+	config string
 
 	client clients.APIClient
 
-	logLevel string
+	verbose bool
 
 	rootCmd = &cobra.Command{
 		Use:   "forge",
@@ -31,6 +31,36 @@ var (
 		Long:  `Build personalized Linux images for edge devices with ease.`,
 	}
 )
+
+type forgeCmd struct {
+	Cmd  *cobra.Command
+	opts forgeCmdOpts
+}
+
+type forgeCmdOpts struct {
+	verbose bool
+	config  string
+}
+
+func NewForgeCmd() *forgeCmd {
+	root := &forgeCmd{}
+
+	cmd := &cobra.Command{
+		Use:   "forge",
+		Short: "Create personalized Linux images for edge devices with ease.",
+		Long:  `Create personalized Linux images for edge devices with ease.`,
+	}
+
+	// cmd.PersistentFlags().StringVar(&root.opts.config, "config", "", "config file (default is $HOME/.forge.yaml)")
+	// cmd.PersistentFlags().BoolVar(&root.opts.verbose, "verbose", false, "Enable verbose mode")
+
+	cmd.AddCommand(
+		images.NewImageCmd(&client).Cmd,
+		imagesets.NewImageSetsCmd(&client).Cmd,
+	)
+	root.Cmd = cmd
+	return root
+}
 
 // Execute executes the root command.
 func Execute() error {
@@ -45,15 +75,36 @@ func init() {
 		imagesets.NewImageSetsCmd(&client).Cmd,
 	)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.forge.yaml)")
-	rootCmd.PersistentFlags().StringVar(&logLevel, "loglevel", "INFO", "level of log verbosity")
+	rootCmd.PersistentFlags().StringVar(&config, "config", "", "config file (default is $HOME/.forge.yaml)")
+	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Enable verbose mode")
+
 }
 
 func initConfig() {
-	if cfgFile != "" {
+	if verbose {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.ErrorLevel)
+	}
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp:          true,
+		TimestampFormat:        time.RFC3339Nano,
+		DisableLevelTruncation: true,
+		PadLevelText:           true,
+		QuoteEmptyFields:       false,
+		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
+			s := strings.Split(f.Function, ".")
+			funcName := s[len(s)-1]
+			return funcName, fmt.Sprintf("%s:%d", path.Base(f.File), f.Line)
+		},
+	})
+	log.SetReportCaller(true)
+	log.SetOutput(os.Stdout)
+
+	if config != "" {
 		// Use config file from the flag.
-		log.Debug("User passed configuration file: ", cfgFile)
-		viper.SetConfigFile(cfgFile)
+		log.Debug("User passed configuration file: ", config)
+		viper.SetConfigFile(config)
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()
@@ -76,31 +127,6 @@ func initConfig() {
 			log.Debug("error loading configuration file: ", err.Error())
 		}
 	}
-
-	log.SetFormatter(&log.TextFormatter{
-		FullTimestamp:          true,
-		TimestampFormat:        time.RFC3339Nano,
-		DisableLevelTruncation: true,
-		PadLevelText:           true,
-		QuoteEmptyFields:       false,
-		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-			s := strings.Split(f.Function, ".")
-			funcName := s[len(s)-1]
-			return funcName, fmt.Sprintf("%s:%d", path.Base(f.File), f.Line)
-		},
-	})
-
-	switch logLevel {
-	case "DEBUG":
-		log.SetLevel(log.DebugLevel)
-	case "ERROR":
-		log.SetLevel(log.ErrorLevel)
-	default:
-		log.SetLevel(log.InfoLevel)
-	}
-
-	log.SetReportCaller(true)
-	log.SetOutput(os.Stdout)
 
 	log.Debug("Using configuration file: ", viper.ConfigFileUsed())
 

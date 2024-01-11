@@ -14,11 +14,6 @@ import (
 type imagesetsListCmd struct {
 	Cmd    *cobra.Command
 	client *clients.APIClient
-	opts   imagesetsListOpts
-}
-
-type imagesetsListOpts struct {
-	imageID int
 }
 
 func NewImageSetsListCmd(client *clients.APIClient) *imagesetsListCmd {
