@@ -24,22 +24,10 @@ var (
 	client clients.APIClient
 
 	verbose bool
-
-	rootCmd = &cobra.Command{
-		Use:   "forge",
-		Short: "Build personalized Linux images for edge devices with ease.",
-		Long:  `Build personalized Linux images for edge devices with ease.`,
-	}
 )
 
 type forgeCmd struct {
-	Cmd  *cobra.Command
-	opts forgeCmdOpts
-}
-
-type forgeCmdOpts struct {
-	verbose bool
-	config  string
+	Cmd *cobra.Command
 }
 
 func NewForgeCmd() *forgeCmd {
@@ -49,35 +37,28 @@ func NewForgeCmd() *forgeCmd {
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
+		Run:   func(cmd *cobra.Command, args []string) {},
 	}
-
-	// cmd.PersistentFlags().StringVar(&root.opts.config, "config", "", "config file (default is $HOME/.forge.yaml)")
-	// cmd.PersistentFlags().BoolVar(&root.opts.verbose, "verbose", false, "Enable verbose mode")
 
 	cmd.AddCommand(
 		images.NewImageCmd(&client).Cmd,
 		imagesets.NewImageSetsCmd(&client).Cmd,
 	)
+
+	cmd.PersistentFlags().StringVar(&config, "config", "", "config file (default is $HOME/.forge.yaml)")
+	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose mode")
+
 	root.Cmd = cmd
 	return root
 }
 
 // Execute executes the root command.
 func Execute() error {
-	return rootCmd.Execute()
+	return NewForgeCmd().Cmd.Execute()
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	rootCmd.AddCommand(
-		images.NewImageCmd(&client).Cmd,
-		imagesets.NewImageSetsCmd(&client).Cmd,
-	)
-
-	rootCmd.PersistentFlags().StringVar(&config, "config", "", "config file (default is $HOME/.forge.yaml)")
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Enable verbose mode")
-
 }
 
 func initConfig() {
@@ -86,6 +67,7 @@ func initConfig() {
 	} else {
 		log.SetLevel(log.ErrorLevel)
 	}
+
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp:          true,
 		TimestampFormat:        time.RFC3339Nano,
