@@ -12,6 +12,7 @@ import (
 
 	"github.com/omaciel/edgeforge/cmd/images"
 	"github.com/omaciel/edgeforge/cmd/imagesets"
+	"github.com/omaciel/edgeforge/config"
 	"github.com/omaciel/edgeforge/pkg/clients"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -19,7 +20,7 @@ import (
 
 var (
 	// Used for flags.
-	config string
+	cfgFile string
 
 	client clients.APIClient
 
@@ -37,7 +38,9 @@ func NewForgeCmd() *forgeCmd {
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
-		Run:   func(cmd *cobra.Command, args []string) {},
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Help()
+		},
 	}
 
 	cmd.AddCommand(
@@ -45,7 +48,7 @@ func NewForgeCmd() *forgeCmd {
 		imagesets.NewImageSetsCmd(&client).Cmd,
 	)
 
-	cmd.PersistentFlags().StringVar(&config, "config", "", "config file (default is $HOME/.forge.yaml)")
+	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
 	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose mode")
 
 	root.Cmd = cmd
@@ -62,6 +65,7 @@ func init() {
 }
 
 func initConfig() {
+
 	if verbose {
 		log.SetLevel(log.DebugLevel)
 	} else {
@@ -83,10 +87,10 @@ func initConfig() {
 	log.SetReportCaller(true)
 	log.SetOutput(os.Stdout)
 
-	if config != "" {
+	if cfgFile != "" {
 		// Use config file from the flag.
-		log.Debug("User passed configuration file: ", config)
-		viper.SetConfigFile(config)
+		log.Debug("User passed configuration file: ", cfgFile)
+		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()
@@ -100,31 +104,9 @@ func initConfig() {
 		log.Debug("Looking for configuration file.")
 	}
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found
-			log.Debug("configuration file not found: ", err.Error())
-		} else {
-			// Config file was found but another error was produced
-			log.Debug("error loading configuration file: ", err.Error())
-		}
-	}
+	config.Init()
 
 	log.Debug("Using configuration file: ", viper.ConfigFileUsed())
 
-	viper.SetEnvPrefix("api")
-	viper.AutomaticEnv()
-
-	settings, err := clients.NewSettings(
-		viper.GetString("baseURL"),
-		viper.GetString("username"),
-		viper.GetString("password"),
-		viper.GetString("proxy"),
-	)
-
-	if err != nil {
-		log.Fatalf("Error reading settings: %v", err)
-	}
-
-	client = *clients.NewAPIClient(settings)
+	client = *clients.NewAPIClient()
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/omaciel/edgeforge/config"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-resty/resty/v2"
@@ -54,8 +55,9 @@ type YourPayloadStruct struct {
 	// Define your payload structure here
 }
 
-func NewAPIClient(settings *Settings) *APIClient {
-	authString := fmt.Sprintf("%s:%s", settings.Username, settings.Password)
+func NewAPIClient() *APIClient {
+	cfg := config.Get()
+	authString := fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	authHeaderValue := "Basic " + base64.StdEncoding.EncodeToString([]byte(authString))
 
 	client := resty.New()
@@ -64,10 +66,10 @@ func NewAPIClient(settings *Settings) *APIClient {
 		return nil
 	})
 
-	client.BaseURL = settings.BaseURL
+	client.BaseURL = cfg.BaseURL
 
-	if settings.ProxyUrl != "" {
-		client.SetProxy(settings.ProxyUrl)
+	if cfg.ProxyUrl != "" {
+		client.SetProxy(cfg.ProxyUrl)
 	}
 
 	return &APIClient{client: client}
