@@ -11,55 +11,46 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type imagesetsVersionsCmd struct {
-	Cmd    *cobra.Command
-	client *clients.APIClient
-	opts   imagesetsVersionsOpts
-}
-
-type imagesetsVersionsOpts struct {
-	imageID int
-}
-
-func NewImageSetsVersionsCmd() *imagesetsVersionsCmd {
-	root := &imagesetsVersionsCmd{}
-	cmd := &cobra.Command{
+var (
+	imageID              int
+	imagesetsVersionsCmd = &cobra.Command{
 		Use:   "images",
 		Short: "Lists all image for an image set",
 		Args:  cobra.NoArgs,
-		Run: func(cmd *cobra.Command, args []string) {
-			var imageSetView types.ImageSetVersionsResponseAPI
+		Run:   runImagesetsVersionsCmd,
+	}
+)
 
-			client := clients.Get()
+func runImagesetsVersionsCmd(cmd *cobra.Command, args []string) {
+	var imageSetView types.ImageSetVersionsResponseAPI
 
-			resp, err := client.GetImageSetsImages(root.opts.imageID)
-			if err != nil {
-				log.Fatalf("request failed: %v", err)
-			}
+	client := clients.Get()
 
-			log.Debug("Response Status:", resp.Status())
-
-			if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
-				log.Fatalln("Error:", err)
-				return
-			}
-
-			if imageSetView.Count > 0 {
-				fmt.Printf("%-6s %-32s %-6s %-18s %-12s\n", "ID", "Image Name", "Version", "Type", "Status")
-				fmt.Printf("%-6s %-32s %-6s %-18s %-12s\n", "------", "----------", "--------", "--------", "--------")
-				for _, imgSet := range imageSetView.Data {
-					fmt.Printf("%-6d %-32s %-6d %-18s %-12s\n", imgSet.ID, imgSet.Name, imgSet.Version, imgSet.ImageType, imgSet.Status)
-				}
-			} else {
-				fmt.Printf("No images were found for image set with id '%v'.\n", root.opts.imageID)
-			}
-		},
+	resp, err := client.GetImageSetsImages(imageID)
+	if err != nil {
+		log.Fatalf("request failed: %v", err)
 	}
 
-	cmd.Flags().IntVarP(&root.opts.imageID, "id", "", 0, "Image Set ID")
-	cmd.MarkFlagRequired("id")
+	log.Debug("Response Status:", resp.Status())
 
-	root.Cmd = cmd
+	if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
+		log.Fatalln("Error:", err)
+		return
+	}
 
-	return root
+	if imageSetView.Count > 0 {
+		fmt.Printf("%-6s %-32s %-6s %-18s %-12s\n", "ID", "Image Name", "Version", "Type", "Status")
+		fmt.Printf("%-6s %-32s %-6s %-18s %-12s\n", "------", "----------", "--------", "--------", "--------")
+		for _, imgSet := range imageSetView.Data {
+			fmt.Printf("%-6d %-32s %-6d %-18s %-12s\n", imgSet.ID, imgSet.Name, imgSet.Version, imgSet.ImageType, imgSet.Status)
+		}
+	} else {
+		fmt.Printf("No images were found for image set with id '%v'.\n", imageID)
+	}
+}
+func init() {
+	imagesetsVersionsCmd.Flags().IntVarP(&imageID, "id", "", 0, "Image Set ID")
+	imagesetsVersionsCmd.MarkFlagRequired("id")
+
+	imageSetsCmd.AddCommand(imagesetsVersionsCmd)
 }

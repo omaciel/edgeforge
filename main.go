@@ -10,6 +10,6 @@ func main() {
 
 	// Execute the root command
 	if err := cmd.Execute(); err != nil {
-		log.Fatal(err)
+		log.Debug(err)
 	}
 }

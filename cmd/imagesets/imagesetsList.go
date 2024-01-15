@@ -11,46 +11,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type imagesetsListCmd struct {
-	Cmd *cobra.Command
+var imagesetsListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Lists all image sets",
+	Args:  cobra.NoArgs,
+	Run:   runImageListCmd,
 }
 
-func NewImageSetsListCmd() *imagesetsListCmd {
-	root := &imagesetsListCmd{}
-	cmd := &cobra.Command{
-		Use:   "list",
-		Short: "Lists all image sets",
-		Args:  cobra.NoArgs,
-		Run: func(cmd *cobra.Command, args []string) {
-			var imageSetView types.ImageSetsListResponseAPI
+func runImageListCmd(cmd *cobra.Command, args []string) {
+	var imageSetView types.ImageSetsListResponseAPI
 
-			client := clients.Get()
+	client := clients.Get()
 
-			resp, err := client.GetImageSetsList()
-			if err != nil {
-				log.Fatalf("request failed: %v", err)
-			}
-
-			log.Debug("Response Status:", resp.Status())
-
-			if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
-				log.Fatalln("Error:", err)
-				return
-			}
-
-			if imageSetView.Count > 0 {
-				fmt.Printf("%-12s %-32s %-12s\n", "Image ID", "Image Name", "Versions")
-				fmt.Printf("%-12s %-32s %-12s\n", "--------", "----------", "--------")
-				for _, imgSet := range imageSetView.Data {
-					fmt.Printf("%-12d %-32s %-12d\n", imgSet.ID, imgSet.Name, imgSet.Version)
-				}
-			} else {
-				fmt.Println("No image sets were found.")
-			}
-		},
+	resp, err := client.GetImageSetsList()
+	if err != nil {
+		log.Fatalf("request failed: %v", err)
 	}
 
-	root.Cmd = cmd
+	log.Debug("Response Status:", resp.Status())
 
-	return root
+	if err = json.Unmarshal(resp.Body(), &imageSetView); err != nil {
+		log.Fatalln("Error:", err)
+		return
+	}
+
+	if imageSetView.Count > 0 {
+		fmt.Printf("%-12s %-32s %-12s\n", "Image ID", "Image Name", "Versions")
+		fmt.Printf("%-12s %-32s %-12s\n", "--------", "----------", "--------")
+		for _, imgSet := range imageSetView.Data {
+			fmt.Printf("%-12d %-32s %-12d\n", imgSet.ID, imgSet.Name, imgSet.Version)
+		}
+	} else {
+		fmt.Println("No image sets were found.")
+	}
+}
+
+func init() {
+	imageSetsCmd.AddCommand(imagesetsListCmd)
 }

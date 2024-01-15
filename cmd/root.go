@@ -27,9 +27,6 @@ var (
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
-		},
 	}
 )
 
@@ -41,8 +38,9 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.AddCommand(
-		images.NewImageCmd().Cmd,
-		imagesets.NewImageSetsCmd().Cmd,
+		images.NewImageCmd(),
+		imagesets.NewImageSetsCmd(),
+		// imagesets.NewImageSetsCmd().Cmd,
 	)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
