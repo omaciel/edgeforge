@@ -21,16 +21,9 @@ var (
 	// Used for flags.
 	cfgFile string
 	verbose bool
-)
 
-type forgeCmd struct {
-	Cmd *cobra.Command
-}
-
-func NewForgeCmd() *forgeCmd {
-	root := &forgeCmd{}
-
-	cmd := &cobra.Command{
+	// Main command for the command line
+	rootCmd = &cobra.Command{
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
@@ -38,26 +31,23 @@ func NewForgeCmd() *forgeCmd {
 			cmd.Help()
 		},
 	}
-
-	cmd.AddCommand(
-		images.NewImageCmd().Cmd,
-		imagesets.NewImageSetsCmd().Cmd,
-	)
-
-	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
-	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose mode")
-
-	root.Cmd = cmd
-	return root
-}
+)
 
 // Execute executes the root command.
 func Execute() error {
-	return NewForgeCmd().Cmd.Execute()
+	return rootCmd.Execute()
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.AddCommand(
+		images.NewImageCmd().Cmd,
+		imagesets.NewImageSetsCmd().Cmd,
+	)
+
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose mode")
+
 }
 
 func initConfig() {
