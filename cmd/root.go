@@ -40,7 +40,6 @@ func init() {
 	rootCmd.AddCommand(
 		images.NewImageCmd(),
 		imagesets.NewImageSetsCmd(),
-		// imagesets.NewImageSetsCmd().Cmd,
 	)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
