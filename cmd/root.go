@@ -44,8 +44,8 @@ func NewForgeCmd() *forgeCmd {
 	}
 
 	cmd.AddCommand(
-		images.NewImageCmd(&client).Cmd,
-		imagesets.NewImageSetsCmd(&client).Cmd,
+		images.NewImageCmd().Cmd,
+		imagesets.NewImageSetsCmd().Cmd,
 	)
 
 	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
@@ -108,5 +108,5 @@ func initConfig() {
 
 	log.Debug("Using configuration file: ", viper.ConfigFileUsed())
 
-	client = *clients.NewAPIClient()
+	client = *clients.Get()
 }

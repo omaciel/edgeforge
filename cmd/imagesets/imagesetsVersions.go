@@ -21,16 +21,16 @@ type imagesetsVersionsOpts struct {
 	imageID int
 }
 
-func NewImageSetsVersionsCmd(client *clients.APIClient) *imagesetsVersionsCmd {
-	root := &imagesetsVersionsCmd{
-		client: client,
-	}
+func NewImageSetsVersionsCmd() *imagesetsVersionsCmd {
+	root := &imagesetsVersionsCmd{}
 	cmd := &cobra.Command{
 		Use:   "images",
 		Short: "Lists all image for an image set",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			var imageSetView types.ImageSetVersionsResponseAPI
+
+			client := clients.Get()
 
 			resp, err := client.GetImageSetsImages(root.opts.imageID)
 			if err != nil {

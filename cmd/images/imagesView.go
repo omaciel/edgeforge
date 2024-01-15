@@ -12,25 +12,24 @@ import (
 )
 
 type imageViewCmd struct {
-	Cmd    *cobra.Command
-	client *clients.APIClient
-	opts   imageViewOpts
+	Cmd  *cobra.Command
+	opts imageViewOpts
 }
 
 type imageViewOpts struct {
 	imageID int
 }
 
-func NewImageViewCmd(client *clients.APIClient) *imageViewCmd {
-	root := &imageViewCmd{
-		client: client,
-	}
+func NewImageViewCmd() *imageViewCmd {
+	root := &imageViewCmd{}
 
 	cmd := &cobra.Command{
 		Use:   "view",
 		Short: "View details of an image by ID",
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
+			client := clients.Get()
+
 			resp, err := client.GetImageDetails(root.opts.imageID)
 			if err != nil {
 				log.Fatalf("Error fetching image details: %s", err)

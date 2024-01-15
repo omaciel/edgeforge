@@ -12,14 +12,11 @@ import (
 )
 
 type imagesetsListCmd struct {
-	Cmd    *cobra.Command
-	client *clients.APIClient
+	Cmd *cobra.Command
 }
 
-func NewImageSetsListCmd(client *clients.APIClient) *imagesetsListCmd {
-	root := &imagesetsListCmd{
-		client: client,
-	}
+func NewImageSetsListCmd() *imagesetsListCmd {
+	root := &imagesetsListCmd{}
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "Lists all image sets",
@@ -27,7 +24,9 @@ func NewImageSetsListCmd(client *clients.APIClient) *imagesetsListCmd {
 		Run: func(cmd *cobra.Command, args []string) {
 			var imageSetView types.ImageSetsListResponseAPI
 
-			resp, err := root.client.GetImageSetsList()
+			client := clients.Get()
+
+			resp, err := client.GetImageSetsList()
 			if err != nil {
 				log.Fatalf("request failed: %v", err)
 			}

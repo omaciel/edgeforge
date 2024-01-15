@@ -1,27 +1,23 @@
 package imagesets
 
 import (
-	"github.com/omaciel/edgeforge/pkg/clients"
 	"github.com/spf13/cobra"
 )
 
 type imageSetsCmd struct {
-	Cmd    *cobra.Command
-	client *clients.APIClient
+	Cmd *cobra.Command
 }
 
-func NewImageSetsCmd(client *clients.APIClient) *imageSetsCmd {
-	root := &imageSetsCmd{
-		client: client,
-	}
+func NewImageSetsCmd() *imageSetsCmd {
+	root := &imageSetsCmd{}
 	cmd := &cobra.Command{
 		Use:   "image-sets",
 		Short: "Manage your image sets",
 	}
 
 	cmd.AddCommand(
-		NewImageSetsListCmd(root.client).Cmd,
-		NewImageSetsVersionsCmd(root.client).Cmd,
+		NewImageSetsListCmd().Cmd,
+		NewImageSetsVersionsCmd().Cmd,
 	)
 
 	root.Cmd = cmd

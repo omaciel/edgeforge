@@ -15,9 +15,8 @@ import (
 var flagOutputType = types.EdgeInstaller
 
 type imageCreateCmd struct {
-	Cmd    *cobra.Command
-	client *clients.APIClient
-	opts   imageCreateOpts
+	Cmd  *cobra.Command
+	opts imageCreateOpts
 }
 
 type imageCreateOptsFunc func(*imageCreateOpts)
@@ -47,10 +46,8 @@ func WithEdgeInstaler(opts *imageCreateOpts) {
 	opts.outputType = string(types.EdgeInstaller)
 }
 
-func NewImageCreateCmd(client *clients.APIClient, opts ...imageCreateOptsFunc) *imageCreateCmd {
-	root := &imageCreateCmd{
-		client: client,
-	}
+func NewImageCreateCmd(opts ...imageCreateOptsFunc) *imageCreateCmd {
+	root := &imageCreateCmd{}
 
 	for _, fn := range opts {
 		fn(&root.opts)
@@ -70,6 +67,8 @@ func NewImageCreateCmd(client *clients.APIClient, opts ...imageCreateOptsFunc) *
 			sshKey := viper.GetString("ssh-key")
 
 			var imageArtifacts = []string{outputTypes}
+
+			client := clients.Get()
 
 			// If building an installer, also explicitly build a commit.
 			if outputTypes == string(types.EdgeInstaller) {
@@ -96,7 +95,7 @@ func NewImageCreateCmd(client *clients.APIClient, opts ...imageCreateOptsFunc) *
 				},
 			}
 
-			resp, err := root.client.CreateImage(imagePayload)
+			resp, err := client.CreateImage(imagePayload)
 			if err != nil {
 				log.Fatalf("POST request failed: %v", err)
 			}

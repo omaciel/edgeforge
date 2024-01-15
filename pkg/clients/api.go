@@ -3,11 +3,17 @@ package clients
 import (
 	"encoding/base64"
 	"fmt"
+	"sync"
 
 	"github.com/omaciel/edgeforge/config"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-resty/resty/v2"
+)
+
+var (
+	Client *APIClient
+	lock   = &sync.Mutex{}
 )
 
 const (
@@ -27,6 +33,21 @@ type Settings struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	ProxyUrl string `yaml:"proxy"`
+}
+
+func Init() {
+	Client = newAPIClient()
+}
+
+func Get() *APIClient {
+	if Client == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if Client == nil {
+			Client = newAPIClient()
+		}
+	}
+	return Client
 }
 
 func NewSettings(baseURL, username, password, proxyURL string) (*Settings, error) {
@@ -55,7 +76,7 @@ type YourPayloadStruct struct {
 	// Define your payload structure here
 }
 
-func NewAPIClient() *APIClient {
+func newAPIClient() *APIClient {
 	cfg := config.Get()
 	authString := fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	authHeaderValue := "Basic " + base64.StdEncoding.EncodeToString([]byte(authString))
