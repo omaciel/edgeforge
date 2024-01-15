@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	imageID      int
-	imageViewCmd = &cobra.Command{
+	imageID               int
+	showCustomPackages    bool
+	showInstalledPackages bool
+	imageViewCmd          = &cobra.Command{
 		Use:   "view",
 		Short: "View details of an image by ID",
 		Args:  cobra.NoArgs,
@@ -50,8 +52,15 @@ func runImageViewCmd(cmd *cobra.Command, args []string) {
 	for idx, artifact := range response.OutputTypes {
 		fmt.Printf("\t%v - %v\n", idx, artifact)
 	}
+	// List additional packages
+	if showInstalledPackages && len(response.Commit.InstalledPackages) > 0 {
+		fmt.Println("Additional Packages:")
+		for idx, installedPackage := range response.Commit.InstalledPackages {
+			fmt.Printf("\t%v - %v\n", idx, installedPackage.Name)
+		}
+	}
 	// List any custom packages
-	if len(response.Packages) > 0 {
+	if showCustomPackages && len(response.Packages) > 0 {
 		fmt.Println("Custom Packages:")
 		for idx, installedPackage := range response.Packages {
 			fmt.Printf("\t%v - %v\n", idx, installedPackage.Name)
@@ -61,6 +70,9 @@ func runImageViewCmd(cmd *cobra.Command, args []string) {
 
 func init() {
 	imageViewCmd.Flags().IntVarP(&imageID, "id", "", 0, "Image ID")
+	imageViewCmd.Flags().BoolVarP(&showCustomPackages, "custom-packages", "", false, "Display additional packages")
+	imageViewCmd.Flags().BoolVarP(&showInstalledPackages, "installed-packages", "", false, "Display all installed packages")
+
 	imageViewCmd.MarkFlagRequired("id")
 
 	imageCmd.AddCommand(imageViewCmd)
