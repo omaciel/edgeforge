@@ -13,7 +13,6 @@ import (
 	"github.com/omaciel/edgeforge/cmd/images"
 	"github.com/omaciel/edgeforge/cmd/imagesets"
 	"github.com/omaciel/edgeforge/config"
-	"github.com/omaciel/edgeforge/pkg/clients"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -21,9 +20,6 @@ import (
 var (
 	// Used for flags.
 	cfgFile string
-
-	client clients.APIClient
-
 	verbose bool
 )
 
@@ -107,6 +103,4 @@ func initConfig() {
 	config.Init()
 
 	log.Debug("Using configuration file: ", viper.ConfigFileUsed())
-
-	client = *clients.Get()
 }
