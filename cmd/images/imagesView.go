@@ -43,6 +43,7 @@ func runImageViewCmd(cmd *cobra.Command, args []string) {
 	fmt.Println("Image Name:", response.Name)
 	fmt.Println("ID:", response.ID)
 	fmt.Println("Distribution:", response.Distribution)
+	fmt.Println("Description:", response.Description)
 	fmt.Println("Image Version:", response.Version)
 	fmt.Println("Image Description:", response.Description)
 	fmt.Println("Status:", response.Status)
