@@ -1,11 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -24,7 +24,7 @@ type config struct {
 func Init() {
 	newConfig, err := newConfiguration()
 	if err != nil {
-		return
+		os.Exit(1)
 	}
 	Config = newConfig
 }
@@ -46,10 +46,12 @@ func newConfiguration() (*config, error) {
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found
-			log.Error("configuration file not found: ", err.Error())
+			log.Debug("Configuration file $HOME/.forge.yaml not found:", err.Error())
+			fmt.Printf("Configuration file %v not found.\n", viper.ConfigFileUsed())
 		} else {
 			// Config file was found but another error was produced
-			log.Error("error loading configuration file: ", err.Error())
+			log.Debug("Error loading configuration file:", err.Error())
+			fmt.Printf("Error loading configuration file %v.\n", viper.ConfigFileUsed())
 		}
 		return nil, err
 	}
@@ -61,34 +63,4 @@ func newConfiguration() (*config, error) {
 		ProxyUrl: viper.GetString("proxy"),
 	}
 	return forgeConfig, nil
-}
-
-func readConfigurationFile(configFile string) {
-	if configFile != "" {
-		// Use config file from the flag.
-		log.Debug("User passed configuration file: ", configFile)
-		viper.SetConfigFile(configFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".forge")
-		viper.SetConfigType("yaml")
-		viper.AddConfigPath("$CWD")
-		viper.AddConfigPath(".")
-		log.Debug("Looking for configuration file.")
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found
-			log.Debug("configuration file not found: ", err.Error())
-		} else {
-			// Config file was found but another error was produced
-			log.Debug("error loading configuration file: ", err.Error())
-		}
-	}
-
 }
