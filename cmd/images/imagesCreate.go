@@ -13,15 +13,6 @@ import (
 )
 
 var (
-	flagOutputType = types.EdgeInstaller
-	name           string
-	version        int
-	distribution   string
-	arch           string
-	packages       []string
-	username       string
-	sshKey         string
-
 	imageCreateCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create a new image",
@@ -30,21 +21,12 @@ var (
 )
 
 func runImageCreateCmd(cmd *cobra.Command, args []string) {
-	name := viper.GetString("name")
-	version := viper.GetInt("version")
-	distribution := viper.GetString("distribution")
-	outputTypes := viper.GetString("output-types")
-	arch := viper.GetString("arch")
-	packages := viper.GetStringSlice("packages")
-	username := viper.GetString("ssh-username")
-	sshKey := viper.GetString("ssh-key")
-
-	var imageArtifacts = []string{outputTypes}
+	var imageArtifacts = []string{string(flagOutputType)}
 
 	client := clients.Get()
 
 	// If building an installer, also explicitly build a commit.
-	if outputTypes == string(types.EdgeInstaller) {
+	if string(flagOutputType) == string(types.EdgeInstaller) {
 		imageArtifacts = append(imageArtifacts, string(types.EdgeCommit))
 	}
 	imagePayload := &types.Image{
@@ -70,14 +52,14 @@ func runImageCreateCmd(cmd *cobra.Command, args []string) {
 
 	resp, err := client.CreateImage(imagePayload)
 	if err != nil {
-		log.Fatalf("POST request failed: %v", err)
+		log.Println("error creating image:", err)
 	}
 
 	log.Debug("Response Status:", resp.Status())
 
 	var response types.Image
 	if err = json.Unmarshal(resp.Body(), &response); err != nil {
-		log.Fatalln("Error:", err)
+		fmt.Println("error unmarshalling response:", err)
 		return
 	}
 
@@ -99,6 +81,8 @@ func init() {
 	imageCreateCmd.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
 	imageCreateCmd.Flags().StringVarP(&username, "ssh-username", "u", "", "Installer username")
 	imageCreateCmd.Flags().StringVarP(&sshKey, "ssh-key", "k", "", "SSH key")
+	imageCreateCmd.MarkFlagsRequiredTogether("ssh-username", "ssh-key")
+
 	viper.BindPFlags(imageCreateCmd.Flags())
 
 	imageCmd.AddCommand(imageCreateCmd)

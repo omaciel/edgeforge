@@ -1,7 +1,21 @@
 package images
 
 import (
+	"github.com/omaciel/edgeforge/pkg/types"
 	"github.com/spf13/cobra"
+)
+
+var (
+	imageID        int
+	flagOutputType = types.EdgeInstaller
+	name           string
+	version        int
+	distribution   string
+	description    string
+	arch           string
+	packages       []string
+	username       string
+	sshKey         string
 )
 
 var imageCmd = &cobra.Command{

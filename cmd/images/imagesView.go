@@ -12,7 +12,6 @@ import (
 )
 
 var (
-	imageID               int
 	showCustomPackages    bool
 	showInstalledPackages bool
 	imageViewCmd          = &cobra.Command{
