@@ -18,15 +18,18 @@ import (
 )
 
 var (
-	// Used for flags.
-	cfgFile string
-	verbose bool
+	flags struct {
+		cfgFile string
+		init    bool
+		verbose bool
+	}
 
 	// Main command for the command line
 	rootCmd = &cobra.Command{
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
+		Run:   func(cmd *cobra.Command, args []string) {},
 	}
 )
 
@@ -36,20 +39,33 @@ func Execute() error {
 }
 
 func init() {
+
 	cobra.OnInitialize(initConfig)
+
 	rootCmd.AddCommand(
 		images.NewImageCmd(),
 		imagesets.NewImageSetsCmd(),
 	)
 
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose mode")
-
+	rootCmd.PersistentFlags().StringVarP(&flags.cfgFile, "config", "c", "", "config file (default is $HOME/.forge.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&flags.verbose, "verbose", "v", false, "Enable verbose mode")
+	rootCmd.PersistentFlags().BoolVarP(&flags.init, "init", "i", false, "Creates a new .forge.yaml in the current folder.")
 }
 
 func initConfig() {
 
-	if verbose {
+	if flags.init {
+		wd, err := os.Getwd()
+		if err != nil {
+			fmt.Println(err)
+		}
+		if err := InitForgefile(os.Stdout, wd); err != nil {
+			fmt.Println(err)
+		}
+		return
+	}
+
+	if flags.verbose {
 		log.SetLevel(log.DebugLevel)
 	} else {
 		log.SetLevel(log.ErrorLevel)
@@ -70,10 +86,10 @@ func initConfig() {
 	log.SetReportCaller(true)
 	log.SetOutput(os.Stdout)
 
-	if cfgFile != "" {
+	if flags.cfgFile != "" {
 		// Use config file from the flag.
-		log.Debug("User passed configuration file: ", cfgFile)
-		viper.SetConfigFile(cfgFile)
+		log.Debug("User passed configuration file: ", flags.cfgFile)
+		viper.SetConfigFile(flags.cfgFile)
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()
