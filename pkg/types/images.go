@@ -42,6 +42,7 @@ type Image struct {
 	Status         string     `json:"Status"`
 	ImageType      string     `json:"ImageType"`
 	OutputTypes    []string   `json:"OutputTypes"`
+	ActivationKey  string     `json:"activation-key"`
 	Commit         *Commit    `json:"Commit"`
 	Installer      *Installer `json:"Installer"`
 	Packages       []Package  `json:"Packages,omitempty"`

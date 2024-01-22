@@ -50,6 +50,10 @@ func runImageCreateCmd(cmd *cobra.Command, args []string) {
 		},
 	}
 
+	if activationkey != "" {
+		imagePayload.ActivationKey = activationkey
+	}
+
 	resp, err := client.CreateImage(imagePayload)
 	if err != nil {
 		log.Println("error creating image:", err)
@@ -78,6 +82,7 @@ func init() {
 	imageCreateCmd.Flags().StringVarP(&distribution, "distribution", "d", "", "Distribution")
 	imageCreateCmd.Flags().Var(&flagOutputType, "output-types", `must be one of "rhel-edge-commit", or "rhel-edge-installer"`)
 	imageCreateCmd.Flags().StringVarP(&arch, "arch", "a", "", "Architecture")
+	imageCreateCmd.Flags().StringVarP(&activationkey, "activation-key", "", "", "Activation")
 	imageCreateCmd.Flags().StringSliceVarP(&packages, "packages", "p", nil, "Installed packages")
 	imageCreateCmd.Flags().StringVarP(&username, "ssh-username", "u", "", "Installer username")
 	imageCreateCmd.Flags().StringVarP(&sshKey, "ssh-key", "k", "", "SSH key")

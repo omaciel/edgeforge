@@ -9,6 +9,7 @@ var (
 	imageID        int
 	flagOutputType = types.EdgeInstaller
 	name           string
+	activationkey  string
 	version        int
 	distribution   string
 	description    string
