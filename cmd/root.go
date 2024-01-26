@@ -29,7 +29,9 @@ var (
 		Use:   "forge",
 		Short: "Create personalized Linux images for edge devices with ease.",
 		Long:  `Create personalized Linux images for edge devices with ease.`,
-		Run:   func(cmd *cobra.Command, args []string) {},
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Help()
+		},
 	}
 )
 
