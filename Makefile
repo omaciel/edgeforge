@@ -7,7 +7,7 @@ help:
 all: build test
 
 build:
-	go build -v ./...
+	go build -v -o ./forge
 
 run:
 	go run .
